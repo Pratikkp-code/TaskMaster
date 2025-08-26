@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Node modules
+node_modules/
+client/node_modules/
+services/auth-service/node_modules/
+services/task-service/node_modules/
+services/realtime-service/node_modules/
+
+# Next.js build folder
+client/.next/
+
+# Secrets
+secrets/
+
+# IDE and OS files
+.vscode/
+.DS_Store
