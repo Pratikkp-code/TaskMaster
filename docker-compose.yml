@@ -55,7 +55,7 @@ services:
     environment:
       # MODIFIED: Using your MongoDB Atlas URI for the 'taskdb' database
      
-      - MONGO_URI=mongodb+srv://Pratikkp:abc-123@cluster0.ezei1jm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
