@@ -32,7 +32,7 @@ services:
       - ./services/auth-service/src:/app/src
     environment:
       # MODIFIED: Using your MongoDB Atlas URI for the 'authdb' database
-      - MONGO_URI=mongodb+srv://Pratikkp:abc-123@cluster0.ezei1jm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
       - PORT=4001
     networks:
