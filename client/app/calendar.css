@@ -1,0 +1,110 @@
+/* --- Custom Interactive Dark Theme for React Big Calendar --- */
+
+/* Main container */
+.rbc-calendar {
+  color: #CBD5E0 !important; /* soft gray text */
+  background: #0F172A !important; /* dark slate base */
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+/* Toolbar */
+.rbc-toolbar {
+  margin-bottom: 15px !important;
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+  font-weight: 600 !important;
+  color: #FACC15 !important; /* amber label */
+  font-size: 18px !important;
+  letter-spacing: 0.5px;
+}
+
+.rbc-btn-group button {
+  background: #1E293B !important;
+  color: #E2E8F0 !important;
+  border: 1px solid #334155 !important;
+  transition: all 0.25s ease-in-out !important;
+}
+
+.rbc-btn-group button:hover {
+  background: #38BDF8 !important; /* sky blue */
+  color: #0F172A !important;
+  transform: scale(1.05);
+}
+
+.rbc-btn-group button.rbc-active {
+  background: #6366F1 !important; /* indigo active */
+  border-color: #6366F1 !important;
+  color: #fff !important;
+}
+
+/* Day headers */
+.rbc-header {
+  background: linear-gradient(90deg, #1E293B, #0F172A) !important;
+  border: none !important;
+  color: #60A5FA !important; /* blue headers */
+  font-weight: 500 !important;
+  padding: 10px !important;
+  text-transform: uppercase;
+}
+
+/* Grid + Cells */
+.rbc-month-view {
+  border: 1px solid #1E293B !important;
+  border-radius: 8px !important;
+}
+
+.rbc-day-bg {
+  background: #111827 !important; /* deep slate */
+  border-left: 1px solid #1E293B !important;
+  transition: background 0.25s ease-in-out, transform 0.2s;
+  cursor: pointer;
+}
+
+.rbc-day-bg:hover {
+  background: #1E293B !important; /* slightly lighter */
+  transform: scale(1.02);
+  z-index: 1;
+  border-radius: 6px;
+}
+
+/* Off-range days (remove white) */
+.rbc-off-range-bg {
+  background: #1A202C !important; /* muted gray instead of white */
+}
+
+.rbc-off-range {
+  color: #4B5563 !important; /* faded gray text */
+}
+
+/* Today highlight */
+.rbc-today {
+  background: #1D4ED8 !important; /* blue for today */
+  color: #fff !important;
+  font-weight: bold !important;
+  border-radius: 6px;
+  animation: pulseHighlight 2s infinite;
+}
+
+/* Pulse animation for today */
+@keyframes pulseHighlight {
+  0%, 100% { box-shadow: 0 0 0px #1D4ED8; }
+  50% { box-shadow: 0 0 10px #3B82F6; }
+}
+
+/* Events */
+.rbc-event {
+  background: linear-gradient(135deg, #10B981, #059669) !important; /* teal gradient */
+  border: none !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  padding: 4px 8px !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rbc-event:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.5);
+}
