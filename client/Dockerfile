@@ -3,7 +3,7 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm install --frozen-lockfile
 
 # --- Stage 2: Build the Application ---
 FROM node:20-alpine AS builder
@@ -11,7 +11,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# IMPORTANT: Define the build arguments
+# Pass in the production URLs as build arguments
 ARG NEXT_PUBLIC_AUTH_API_URL
 ARG NEXT_PUBLIC_TASK_API_URL
 ARG NEXT_PUBLIC_REALTIME_API_URL
@@ -25,32 +25,29 @@ ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 
 RUN npm run build
 
-# --- Stage 3: Run the Application ---
+# --- Stage 3: Production Runner ---
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV production
 
+# Create a non-root user for security
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# --- THIS IS THE CRITICAL FIX ---
+# 1. Copy the entire 'standalone' output directory
+COPY --from=builder /app/.next/standalone ./
+# 2. Copy the 'public' and '.next/static' folders into their correct
+#    locations WITHIN the 'standalone' directory structure.
 COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/.next/static ./.next/static
+# -----------------------------
 
 USER nextjs
+
 EXPOSE 3000
 ENV PORT 3000
 
-# The ARG variables must be re-declared in the final stage to be available at RUNTIME
-ARG NEXT_PUBLIC_AUTH_API_URL
-ARG NEXT_PUBLIC_TASK_API_URL
-ARG NEXT_PUBLIC_REALTIME_API_URL
-ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-
-# And then re-exposed as environment variables
-ENV NEXT_PUBLIC_AUTH_API_URL=$NEXT_PUBLIC_AUTH_API_URL
-ENV NEXT_PUBLIC_TASK_API_URL=$NEXT_PUBLIC_TASK_API_URL
-ENV NEXT_PUBLIC_REALTIME_API_URL=$NEXT_PUBLIC_REALTIME_API_URL
-ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-
+# This is the correct command to run a standalone server.
+# The server.js file is located inside the 'standalone' directory.
 CMD ["node", "server.js"]
