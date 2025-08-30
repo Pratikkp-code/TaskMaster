@@ -209,8 +209,10 @@ export const setTaskLocation = async (req, res) => {
     if (task.user.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
 
 
-    const geoResponse = await axios.post('http://geo-service:4004/api/geocode', { address });
-
+    const GEO_SERVICE_URL = process.env.GEO_SERVICE_URL || 'http://geo-service:4004';
+    
+    const geoResponse = await axios.post(`${GEO_SERVICE_URL}/api/geocode`, { address });
+    
     const { lat, lng } = geoResponse.data;
 
     task.location = { address, lat, lng };
