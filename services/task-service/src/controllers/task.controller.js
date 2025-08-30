@@ -211,7 +211,7 @@ export const setTaskLocation = async (req, res) => {
 
     const GEO_SERVICE_URL = process.env.GEO_SERVICE_URL || 'http://geo-service:4004';
     
-    const geoResponse = await axios.post(`http://${GEO_SERVICE_URL}/api/geocode`, { address });
+    const geoResponse = await axios.post(`http://${GEO_SERVICE_URL}.onrender.com/api/geocode`, { address });
     
     const { lat, lng } = geoResponse.data;
 
