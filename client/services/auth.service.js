@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 
-const API_HOST = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://localhost:4001';
-const API_URL = `${API_HOST}/api/auth/`;
+const API_URL = 'http://localhost:4001/api/auth/';
 
 const register = (name, email, password) => {
   return axios.post(API_URL + 'register', {

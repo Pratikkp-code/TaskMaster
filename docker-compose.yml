@@ -83,6 +83,9 @@ services:
       - ./services/geo-service/src:/app/src
     environment:
       - PORT=4004
+      # --- THIS IS THE CRITICAL FIX ---
+      # This line reads the key from your .env file and passes it
+      # into the geo-service container.
       - GOOGLE_GEOCODING_API_KEY=AIzaSyDCg_N7DYHRcNnWb9wJU6pbWYLPh6EfLSk
     networks:
       - app-network
