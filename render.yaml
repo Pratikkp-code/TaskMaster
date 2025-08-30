@@ -16,7 +16,7 @@ services:
     envVars:
       - key: PORT
         value: 10000
-      - key: GOOGLE_GEOCODING_API_KEY
+      - key: GEOCODING_API_KEY
         fromSecret: GOOGLE_GEOCODING_API_KEY
 
   # --- Service 3: The Real-time Service (Backend) ---
@@ -30,11 +30,11 @@ services:
     envVars:
       - key: PORT
         value: 10000
-      - fromService: # Get Redis URL from the managed service
+      - key: REDIS_URL # <-- CORRECTED: Using a single URL
+        fromService:
           type: redis
           name: redis
-          property: url
-        key: REDIS_URL
+          property: connectionString # <-- CORRECTED: Use 'connectionString'
 
   # --- Service 4: The Auth Service (Backend) ---
   - type: web
@@ -73,11 +73,11 @@ services:
         fromSecret: GCS_BUCKET_NAME
       - key: GOOGLE_APPLICATION_CREDENTIALS
         fromSecret: GCP_CREDENTIALS_JSON
-      - fromService:
+      - key: REDIS_URL # <-- CORRECTED: Using a single URL
+        fromService:
           type: redis
           name: redis
-          property: url
-        key: REDIS_URL
+          property: connectionString # <-- CORRECTED: Use 'connectionString'
 
   # --- Service 6: The Next.js Client (Frontend) ---
   - type: web
@@ -87,22 +87,21 @@ services:
     dockerfilePath: ./client/Dockerfile
     plan: free
     healthCheckPath: /
-    # The 'envVars' here are automatically available during the build process
     envVars:
       - key: NEXT_PUBLIC_AUTH_API_URL
         fromService:
           type: web
           name: auth-service
-          property: url
+          property: host # <-- CORRECTED: Use 'host'
       - key: NEXT_PUBLIC_TASK_API_URL
         fromService:
           type: web
           name: task-service
-          property: url
+          property: host # <-- CORRECTED: Use 'host'
       - key: NEXT_PUBLIC_REALTIME_API_URL
         fromService:
           type: web
           name: realtime-service
-          property: url
+          property: host # <-- CORRECTED: Use 'host'
       - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
         fromSecret: GOOGLE_MAPS_API_KEY
