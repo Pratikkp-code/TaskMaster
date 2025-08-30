@@ -72,7 +72,6 @@ services:
       # All other secrets (MONGO_URI, GCS_*, etc.) are inherited
 
   # --- Service 6: Next.js Client ---
-    # --- Service 6: Next.js Client (Frontend) ---
   - name: client
     type: web
     env: docker
@@ -80,22 +79,12 @@ services:
     healthCheckPath: /
     dockerContext: ./client
     dockerfilePath: ./client/Dockerfile
-    # The 'envVars' here are automatically available at both build time and run time
+    # The 'envVars' for the client are for building URLs and the Maps key
     envVars:
       - key: NEXT_PUBLIC_AUTH_API_URL
-        fromService:
-          type: web
-          name: auth-service
-          property: host
+        fromService: { type: web, name: auth-service, property: host }
       - key: NEXT_PUBLIC_TASK_API_URL
-        fromService:
-          type: web
-          name: task-service
-          property: host
+        fromService: { type: web, name: task-service, property: host }
       - key: NEXT_PUBLIC_REALTIME_API_URL
-        fromService:
-          type: web
-          name: realtime-service
-          property: host
-      - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-        fromSecret: GOOGLE_MAPS_API_KEY
+        fromService: { type: web, name: realtime-service, property: host }
+      # NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is inherited
