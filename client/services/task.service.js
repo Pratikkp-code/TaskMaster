@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { get } from 'mongoose';
 
-const API_URL = `https://task-service-ntn0.onrender.com/api/auth/`;
+const API_URL = `https://task-service-ntn0.onrender.com/api/tasks/`;
 
 
 
