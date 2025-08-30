@@ -30,6 +30,7 @@ services:
     envVars:
       - key: PORT
         value: 10000
+      # --- THIS IS THE CORRECTED SYNTAX ---
       - key: REDIS_URL
         fromService:
           type: redis
@@ -73,6 +74,7 @@ services:
         fromSecret: GCS_BUCKET_NAME
       - key: GOOGLE_APPLICATION_CREDENTIALS
         fromSecret: GCP_CREDENTIALS_JSON
+      # --- THIS IS THE CORRECTED SYNTAX ---
       - key: REDIS_URL
         fromService:
           type: redis
@@ -88,6 +90,7 @@ services:
     dockerContext: ./client
     dockerfilePath: ./client/Dockerfile
     envVars:
+      # --- CORRECTED SYNTAX FOR ALL fromService BLOCKS ---
       - key: NEXT_PUBLIC_AUTH_API_URL
         fromService:
           type: web
