@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-
-const API_HOST = process.env.NEXT_PUBLIC_AUTH_API_URL ;
-const API_URL = `${API_HOST}/api/auth/`;
+const API_URL = `https://auth-service-kidv.onrender.com/api/auth/`;
 
 const register = (name, email, password) => {
   return axios.post(API_URL + 'register', {
