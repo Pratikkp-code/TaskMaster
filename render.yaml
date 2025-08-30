@@ -1,3 +1,7 @@
+# --- This is the new section that links our reusable secret vault ---
+envVarGroups:
+  - name: taskmaster-secrets # This name MUST EXACTLY match the group you created in Render
+
 services:
   # --- Service 1: Redis ---
   - name: redis
@@ -14,10 +18,9 @@ services:
     dockerContext: ./services/geo-service
     dockerfilePath: ./services/geo-service/Dockerfile
     envVars:
-      - key: PORT
+      - key: PORT # This is not a secret, so it stays here
         value: 10000
-      - key: GEOCODING_API_KEY
-        fromSecret: GOOGLE_GEOCODING_API_KEY
+      # All secrets are now inherited from the envVarGroup
 
   # --- Service 3: Real-time Service ---
   - name: realtime-service
@@ -30,7 +33,6 @@ services:
     envVars:
       - key: PORT
         value: 10000
-      # --- THIS IS THE CORRECTED SYNTAX ---
       - key: REDIS_URL
         fromService:
           type: redis
@@ -48,10 +50,7 @@ services:
     envVars:
       - key: PORT
         value: 10000
-      - key: MONGO_URI
-        fromSecret: MONGO_URI
-      - key: JWT_SECRET
-        fromSecret: JWT_SECRET
+      # All secrets are now inherited from the envVarGroup
 
   # --- Service 5: Task Service ---
   - name: task-service
@@ -64,22 +63,12 @@ services:
     envVars:
       - key: PORT
         value: 10000
-      - key: MONGO_URI
-        fromSecret: MONGO_URI
-      - key: JWT_SECRET
-        fromSecret: JWT_SECRET
-      - key: GCS_PROJECT_ID
-        fromSecret: GCS_PROJECT_ID
-      - key: GCS_BUCKET_NAME
-        fromSecret: GCS_BUCKET_NAME
-      - key: GOOGLE_APPLICATION_CREDENTIALS
-        fromSecret: GCP_CREDENTIALS_JSON
-      # --- THIS IS THE CORRECTED SYNTAX ---
       - key: REDIS_URL
         fromService:
           type: redis
           name: redis
           property: connectionString
+      # All secrets are now inherited from the envVarGroup
 
   # --- Service 6: Next.js Client ---
   - name: client
@@ -89,8 +78,8 @@ services:
     healthCheckPath: /
     dockerContext: ./client
     dockerfilePath: ./client/Dockerfile
+    # The 'envVars' for the client are for building URLs, not secrets, so they stay here.
     envVars:
-      # --- CORRECTED SYNTAX FOR ALL fromService BLOCKS ---
       - key: NEXT_PUBLIC_AUTH_API_URL
         fromService:
           type: web
@@ -106,5 +95,4 @@ services:
           type: web
           name: realtime-service
           property: host
-      - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-        fromSecret: GOOGLE_MAPS_API_KEY
+      # The Maps API key is also inherited from the envVarGroup
