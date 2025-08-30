@@ -8,6 +8,10 @@ const port = process.env.PORT || 4004;
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Geo Service is healthy' });
+});
+
 app.post('/api/geocode', async (req, res) => {
   const { address } = req.body;
   if (!address) {
