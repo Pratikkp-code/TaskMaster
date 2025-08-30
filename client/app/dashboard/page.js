@@ -48,7 +48,8 @@ if (err.response?.status === 401) { authService.logout(); router.push('/login');
 });
 }, [debouncedSearchTerm, router]);
 useEffect(() => {
-const socket = new WebSocket('ws://localhost:4003');
+const WS_URL = process.env.NEXT_PUBLIC_REALTIME_API_URL?.replace(/^http/, 'ws') || 'ws://localhost:4003';
+const socket = new WebSocket(WS_URL);
 socket.onmessage = (event) => {
 const message = JSON.parse(event.data);
 if (message.event === 'TASK_UPDATED') {
