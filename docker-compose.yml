@@ -54,19 +54,41 @@ services:
       - ./secrets/gcp-credentials.json:/app/gcp-credentials.json:ro
     environment:
       # MODIFIED: Using your MongoDB Atlas URI for the 'taskdb' database
-     
+
       - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PORT=4002
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-credentials.json
       - GCS_PROJECT_ID=${GCS_PROJECT_ID}
       - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-credentials.json
     networks:
       - app-network
     depends_on: # We still depend on the local redis container
       - redis
+
+
+    #--------------------------------
+  # GEOLOCATION MICROSERVICE
+  #--------------------------------
+  geo-service:
+    build:
+      context: ./services/geo-service
+      dockerfile: Dockerfile
+    container_name: geo-service
+    ports:
+      - "4004:4004"
+    volumes:
+      - ./services/geo-service/src:/app/src
+    environment:
+      - PORT=4004
+      # --- THIS IS THE CRITICAL FIX ---
+      # This line reads the key from your .env file and passes it
+      # into the geo-service container.
+      - GOOGLE_GEOCODING_API_KEY=AIzaSyDCg_N7DYHRcNnWb9wJU6pbWYLPh6EfLSk
+    networks:
+      - app-network
 
   #--------------------------------
   # REAL-TIME WEBSOCKET MICROSERVICE

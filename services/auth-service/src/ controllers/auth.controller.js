@@ -1,10 +1,6 @@
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// in /services/auth-service/src/controllers/auth.controller.js
 
-// in /services/auth-service/src/controllers/auth.controller.js
 
 export const registerUser = async (req, res) => {
 
@@ -16,7 +12,6 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    // Now, create the user with the variables
     user = new User({
       name,
       email,
@@ -32,7 +27,6 @@ export const registerUser = async (req, res) => {
   }
 };;
 
-// @desc    Authenticate user & get token
 // @route   POST /api/auth/login
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;

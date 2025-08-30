@@ -6,7 +6,6 @@ const connectDB = async () => {
     console.log("\n Mongodb connected successfully !! DB HOST:",`${connectionInstance.connection.host}`);
   } catch (err) {
     console.error(`Auth Service DB Connection Error: ${err.message}`);
-    // Exit process with failure
     process.exit(1);
   }
 };

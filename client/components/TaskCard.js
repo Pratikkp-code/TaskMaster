@@ -1,23 +1,13 @@
-"use client";
-
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { motion } from 'framer-motion';
 
-const Checkbox = ({ isDone, onToggle }) => (
-  <button
-    onClick={onToggle}
-    className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-colors
-      ${isDone ? 'bg-green-500 border-green-500' : 'bg-transparent border-gray-400 hover:border-white'}`}
-  >
-    {isDone && (
-      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-      </svg>
-    )}
-  </button>
-);
+const isImageUrl = (url) => {
+  if (!url) return false;
+  return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url.toLowerCase());
+};
 
-export default function TaskCard({ task, onStatusChange, onDelete }) {
+export default function TaskCard({ task, onClick }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task._id });
 
   const style = {
@@ -26,38 +16,51 @@ export default function TaskCard({ task, onStatusChange, onDelete }) {
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const isDone = task.status === 'Done';
-
-  const handleToggleDone = () => {
-    const newStatus = isDone ? 'To Do' : 'Done';
-    onStatusChange(task, newStatus);
-  };
+  const coverImage = task.attachments?.find(file => isImageUrl(file.url));
+  const attachmentCount = task.attachments?.length || 0;
+  const commentCount = task.comments?.length || 0;
+  
 
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="relative group flex items-start gap-3 p-3 bg-[#282E33] rounded-lg shadow-md cursor-grab active:cursor-grabbing text-white"
+      onClick={() => onClick(task)}
+      className="bg-[#243555] rounded-xl shadow-lg cursor-grab active:cursor-grabbing text-gray-100 transition-all transform hover:scale-[1.02] hover:shadow-xl hover:-translate-y-1"
     >
-      <Checkbox isDone={isDone} onToggle={handleToggleDone} />
-      <p className={`flex-grow pr-6 ${isDone ? 'line-through text-gray-500' : ''}`}>
-        {task.title}
-      </p>
-      
-      <button 
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(task._id); // This calls the function passed from the parent
-        }}
-        className="absolute top-2 right-2 p-1 text-gray-500 rounded-full opacity-0 group-hover:opacity-100 hover:bg-gray-600 hover:text-white transition-opacity"
-        aria-label="Delete task"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
+      {coverImage && (
+        <div className="w-full h-50 overflow-hidden rounded-t-xl">
+          <img src={coverImage.url} alt="Task cover" className="w-full h-full object-cover" />
+        </div>
+      )}
+      <div className="p-4">
+        <p className="mb-2 text-base font-medium">{task.title}</p>
+        <div className="flex items-center gap-4 text-xs text-gray-400">
+          {attachmentCount > 0 && (
+            <span className="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              {attachmentCount}
+            </span>
+          )}
+          {commentCount > 0 && (
+            <span className="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
+              </svg>
+              {commentCount}
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 }

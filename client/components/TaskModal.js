@@ -5,36 +5,21 @@ import Modal from 'react-modal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// --- Custom Styling for the Modal ---
-// --- THE NEW STYLE WITH MORE OPACITY ---
-// --- THE NEW, CORRECTED STYLE ---
 const customStyles = {
   content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#1D2125',
-    border: '1px solid #4A5568',
+    backgroundColor: '#1B263B',
+    border: '1px solid #3B546B',
     borderRadius: '12px',
     color: 'white',
     width: '90%',
     maxWidth: '500px',
     padding: '24px',
-    // Give the content a z-index as well, higher than the overlay's
-    zIndex: '1001'
   },
   overlay: {
-    backgroundColor: 'rgba(10, 10, 10, 0.9)',
-    // THIS IS THE CRITICAL FIX
-    // A high z-index ensures the overlay is on top of all other page content.
-    zIndex: '1000'
+    backgroundColor: 'rgba(13, 27, 42, 0.9)',
   },
 };
 
-// Bind the modal to your app element for accessibility
 if (typeof window !== 'undefined') {
   Modal.setAppElement('body');
 }
@@ -42,24 +27,26 @@ if (typeof window !== 'undefined') {
 export default function TaskModal({ isOpen, onRequestClose, onTaskCreate, initialDate }) {
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    // When the modal opens, pre-fill the date with the date the user clicked on
     if (initialDate) {
       setDueDate(new Date(initialDate));
     }
-  }, [initialDate]);
+
+    setErrorMessage('');
+  }, [initialDate, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title || !dueDate) {
-      alert('Please provide a title and a due date.');
+      setErrorMessage('Please provide a title and a due date.');
       return;
     }
-    // Call the creation function passed from the parent component
+    setErrorMessage('');
     onTaskCreate(title, dueDate.toISOString());
-    onRequestClose(); // Close the modal
-    setTitle(''); // Reset the form
+    onRequestClose();
+    setTitle('');
     setDueDate(null);
   };
 
@@ -70,33 +57,34 @@ export default function TaskModal({ isOpen, onRequestClose, onTaskCreate, initia
       style={customStyles}
       contentLabel="Add New Task"
     >
-      <h2 className="text-2xl font-bold mb-4">Add a Card</h2>
+      <h2 className="text-2xl font-bold mb-4 text-white">Add a Card</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-semibold mb-1">Name</label>
+          <label className="block text-sm font-semibold mb-1 text-gray-400">Name</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter a name for this card"
-            className="w-full p-2 rounded-md bg-[#282E33] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 rounded-lg bg-[#243555] border-2 border-transparent text-gray-100 placeholder-gray-400 focus:outline-none focus:border-cyan-500 transition-colors"
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold mb-1">Due Date</label>
+          <label className="block text-sm font-semibold mb-1 text-gray-400">Due Date</label>
           <DatePicker
             selected={dueDate}
             onChange={(date) => setDueDate(date)}
-            className="w-full p-2 rounded-md bg-[#282E33] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 rounded-lg bg-[#243555] border-2 border-transparent text-gray-100 placeholder-gray-400 focus:outline-none focus:border-cyan-500 transition-colors"
             showTimeSelect
             dateFormat="Pp"
           />
         </div>
+        {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
         <div className="flex justify-end gap-4 pt-4">
-          <button type="button" onClick={onRequestClose} className="px-4 py-2 bg-[#282E33] rounded-md hover:bg-gray-600">
+          <button type="button" onClick={onRequestClose} className="px-4 py-2 bg-[#243555] rounded-lg text-white hover:bg-[#3B546B] transition-colors transform active:scale-95">
             Cancel
           </button>
-          <button type="submit" className="px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700">
+          <button type="submit" className="px-4 py-2 bg-cyan-600 rounded-lg text-white font-semibold hover:bg-cyan-700 transition-colors transform active:scale-95">
             Add Card
           </button>
         </div>

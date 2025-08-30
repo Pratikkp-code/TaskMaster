@@ -1,6 +1,9 @@
 import express from 'express';
-import { getTasks, createTask ,updateTask, deleteTask} from '../controllers/task.controller.js';
+import { getTasks, createTask ,updateTask, deleteTask, searchTasks, addComment, setTaskLocation} from '../controllers/task.controller.js';
 import authMiddleware from '../middleware/auth.middleware.js';
+import uploadToGCS  from '../gcs.upload.js';
+import { attachFile } from '../controllers/task.controller.js';
+
 
 const router = express.Router();
 
@@ -9,10 +12,17 @@ const router = express.Router();
 router.route('/')
   .get(authMiddleware, getTasks)
   .post(authMiddleware, createTask);
-  // Add a new route for updating a task
+
+router.get('/search', authMiddleware, searchTasks);
+
 router.route('/:id')
   .put(authMiddleware, updateTask)
   .delete(authMiddleware, deleteTask);
 
+router.post('/:id/comments', authMiddleware, addComment);
+
+router.post('/:id/attach', authMiddleware, uploadToGCS, attachFile);
+
+router.post('/:id/location', authMiddleware, setTaskLocation);
 
 export default router;

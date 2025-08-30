@@ -8,7 +8,7 @@ import TaskModal from './TaskModal';
 
 const localizer = momentLocalizer(moment);
 
-export default function CalendarView({ tasks, onTaskCreate }) {
+export default function CalendarView({ tasks, onTaskCreate, onTaskClick }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -22,14 +22,21 @@ export default function CalendarView({ tasks, onTaskCreate }) {
       allDay: true,
     }));
 
-  // This function is called when a user clicks on a date slot
+  const handleSelectEvent = (event) => {
+    const clickedTask = tasks.find(t => t._id === event.id);
+    if (clickedTask) {
+      onTaskClick(clickedTask); 
+    }
+  };
+
+
   const handleSelectSlot = (slotInfo) => {
-    setSelectedDate(slotInfo.start); // Save the date that was clicked
-    setModalIsOpen(true); // Open the modal
+    setSelectedDate(slotInfo.start); 
+    setModalIsOpen(true); 
   };
 
   const handleCreateTaskInModal = (title, dueDate) => {
-    // Pass the new task details up to the main dashboard page
+ 
     onTaskCreate(title, dueDate);
   };
 
@@ -42,7 +49,8 @@ export default function CalendarView({ tasks, onTaskCreate }) {
         endAccessor="end"
         views={['month', 'week', 'day']}
         selectable={true}
-        onSelectSlot={handleSelectSlot} // <-- SPECIFY THE HANDLER
+        onSelectSlot={handleSelectSlot} 
+        onSelectEvent={handleSelectEvent}//
       />
       <TaskModal
         isOpen={modalIsOpen}

@@ -11,5 +11,5 @@ const connectRedis = async () => {
   console.log('Task Service: Redis Connected...');
 };
 
-// We export the client to use for publishing messages
+
 export { redisClient, connectRedis };
