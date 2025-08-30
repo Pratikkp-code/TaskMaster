@@ -10,8 +10,15 @@ const app = express();
 const port = process.env.PORT || 4001;
 
 // Middleware
-app.use(cors());
+
 app.use(express.json());
+app.use(cors({
+  origin: '*', 
+  credentials: true, 
+  exposedHeaders: ['Access-Control-Allow-Private-Network'],
+  allowedHeaders: ['Content-Type', 'x-auth-token', 'Access-Control-Allow-Private-Network'],
+}));
+
 app.use((req, res, next) => {
   
   if (req.method === 'POST' && Object.keys(req.body).length === 0) {

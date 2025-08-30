@@ -7,7 +7,17 @@ import { subscribeToTaskUpdates } from './services/redisSubscriber.js';
 const app = express();
 const port = process.env.PORT || 4003;
 
-app.use(cors());
+app.use(cors({
+  origin: '*', 
+  credentials: true,
+  exposedHeaders: ['Access-Control-Allow-Private-Network'],
+  allowedHeaders: ['Content-Type', 'x-auth-token', 'Access-Control-Allow-Private-Network'],
+}));
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Private-Network', 'true');
+    next();
+});
 
 // create an HTTP server to which we can attach our WebSocket server
 const server = http.createServer(app);

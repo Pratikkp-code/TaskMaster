@@ -5,7 +5,18 @@ import axios from 'axios';
 const app = express();
 const port = process.env.PORT || 4004;
 
-app.use(cors());
+app.use(cors({
+  origin: '*', 
+  credentials: true, 
+  exposedHeaders: ['Access-Control-Allow-Private-Network'],
+  allowedHeaders: ['Content-Type', 'x-auth-token', 'Access-Control-Allow-Private-Network'],
+}));
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Private-Network', 'true');
+    next();
+});
+
 app.use(express.json());
 
 app.post('/api/geocode', async (req, res) => {
