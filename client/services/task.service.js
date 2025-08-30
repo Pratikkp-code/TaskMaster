@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { get } from 'mongoose';
 
-
-const API_HOST = process.env.NEXT_PUBLIC_AUTH_API_URL;
-const API_URL = `${API_HOST}/api/auth/`;
+const API_URL = `https://task-service-ntn0.onrender.com/api/auth/`;
 
 
 
