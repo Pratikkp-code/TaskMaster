@@ -1,49 +1,49 @@
 services:
-  # --- Service 1: The Redis Database ---
-  - type: redis
-    name: redis
+  # --- Service 1: Redis ---
+  - name: redis
+    type: redis
     plan: free
     ipAllowList: []
 
-  # --- Service 2: The Geo Service (Backend) ---
-  - type: web
-    name: geo-service
+  # --- Service 2: Geo Service ---
+  - name: geo-service
+    type: web
     env: docker
-    dockerContext: ./services/geo-service
-    dockerfilePath: ./services/geo-service/Dockerfile
     plan: free
     healthCheckPath: /
+    dockerContext: ./services/geo-service
+    dockerfilePath: ./services/geo-service/Dockerfile
     envVars:
       - key: PORT
         value: 10000
       - key: GEOCODING_API_KEY
         fromSecret: GOOGLE_GEOCODING_API_KEY
 
-  # --- Service 3: The Real-time Service (Backend) ---
-  - type: web
-    name: realtime-service
+  # --- Service 3: Real-time Service ---
+  - name: realtime-service
+    type: web
     env: docker
-    dockerContext: ./services/realtime-service
-    dockerfilePath: ./services/realtime-service/Dockerfile
     plan: free
     healthCheckPath: /
+    dockerContext: ./services/realtime-service
+    dockerfilePath: ./services/realtime-service/Dockerfile
     envVars:
       - key: PORT
         value: 10000
-      - key: REDIS_URL # <-- CORRECTED: Using a single URL
+      - key: REDIS_URL
         fromService:
           type: redis
           name: redis
-          property: connectionString # <-- CORRECTED: Use 'connectionString'
+          property: connectionString
 
-  # --- Service 4: The Auth Service (Backend) ---
-  - type: web
-    name: auth-service
+  # --- Service 4: Auth Service ---
+  - name: auth-service
+    type: web
     env: docker
-    dockerContext: ./services/auth-service
-    dockerfilePath: ./services/auth-service/Dockerfile
     plan: free
     healthCheckPath: /
+    dockerContext: ./services/auth-service
+    dockerfilePath: ./services/auth-service/Dockerfile
     envVars:
       - key: PORT
         value: 10000
@@ -52,14 +52,14 @@ services:
       - key: JWT_SECRET
         fromSecret: JWT_SECRET
 
-  # --- Service 5: The Task Service (Backend) ---
-  - type: web
-    name: task-service
+  # --- Service 5: Task Service ---
+  - name: task-service
+    type: web
     env: docker
-    dockerContext: ./services/task-service
-    dockerfilePath: ./services/task-service/Dockerfile
     plan: free
     healthCheckPath: /
+    dockerContext: ./services/task-service
+    dockerfilePath: ./services/task-service/Dockerfile
     envVars:
       - key: PORT
         value: 10000
@@ -73,35 +73,35 @@ services:
         fromSecret: GCS_BUCKET_NAME
       - key: GOOGLE_APPLICATION_CREDENTIALS
         fromSecret: GCP_CREDENTIALS_JSON
-      - key: REDIS_URL # <-- CORRECTED: Using a single URL
+      - key: REDIS_URL
         fromService:
           type: redis
           name: redis
-          property: connectionString # <-- CORRECTED: Use 'connectionString'
+          property: connectionString
 
-  # --- Service 6: The Next.js Client (Frontend) ---
-  - type: web
-    name: client
+  # --- Service 6: Next.js Client ---
+  - name: client
+    type: web
     env: docker
-    dockerContext: ./client
-    dockerfilePath: ./client/Dockerfile
     plan: free
     healthCheckPath: /
+    dockerContext: ./client
+    dockerfilePath: ./client/Dockerfile
     envVars:
       - key: NEXT_PUBLIC_AUTH_API_URL
         fromService:
           type: web
           name: auth-service
-          property: host # <-- CORRECTED: Use 'host'
+          property: host
       - key: NEXT_PUBLIC_TASK_API_URL
         fromService:
           type: web
           name: task-service
-          property: host # <-- CORRECTED: Use 'host'
+          property: host
       - key: NEXT_PUBLIC_REALTIME_API_URL
         fromService:
           type: web
           name: realtime-service
-          property: host # <-- CORRECTED: Use 'host'
+          property: host
       - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
         fromSecret: GOOGLE_MAPS_API_KEY
