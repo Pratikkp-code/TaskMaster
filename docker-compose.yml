@@ -1,132 +1,68 @@
-version: '3.8'
 
 services:
-  #--------------------------------
-  # FRONTEND CLIENT (NEXT.JS)
-  #--------------------------------
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    build: { context: ./client, dockerfile: Dockerfile }
     container_name: client
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-      - /app/.next
-    networks:
-      - app-network
+    ports: [ "3000:3000" ]
+    volumes: [ ./client:/app, /app/node_modules, /app/.next ]
+    networks: [ app-network ]
 
-  #--------------------------------
-  # AUTHENTICATION MICROSERVICE
-  #--------------------------------
   auth-service:
-    build:
-      context: ./services/auth-service
-      dockerfile: Dockerfile
+    build: { context: ./services/auth-service, dockerfile: Dockerfile }
     container_name: auth-service
-    ports:
-      - "4001:4001"
-    volumes:
-      - ./services/auth-service/src:/app/src
+    ports: [ "4001:4001" ]
+    volumes: [ ./services/auth-service/src:/app/src ]
     environment:
-      # MODIFIED: Using your MongoDB Atlas URI for the 'authdb' database
       - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
       - PORT=4001
-    networks:
-      - app-network
-    # REMOVED: 'depends_on' is no longer needed as the database is external
+    networks: [ app-network ]
 
-  #--------------------------------
-  # TASK MANAGEMENT MICROSERVICE
-  #--------------------------------
   task-service:
-    build:
-      context: ./services/task-service
-      dockerfile: Dockerfile
+    build: { context: ./services/task-service, dockerfile: Dockerfile }
     container_name: task-service
-    ports:
-      - "4002:4002"
+    ports: [ "4002:4002" ]
     volumes:
       - ./services/task-service/src:/app/src
       - ./secrets/gcp-credentials.json:/app/gcp-credentials.json:ro
     environment:
-      # MODIFIED: Using your MongoDB Atlas URI for the 'taskdb' database
-
       - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - REDIS_URL=${REDIS_URL} # Using single URL for consistency
       - PORT=4002
       - GCS_PROJECT_ID=${GCS_PROJECT_ID}
       - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
       - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-credentials.json
-    networks:
-      - app-network
-    depends_on: # We still depend on the local redis container
-      - redis
+    networks: [ app-network ]
+    depends_on: [ redis ]
 
-
-    #--------------------------------
-  # GEOLOCATION MICROSERVICE
-  #--------------------------------
   geo-service:
-    build:
-      context: ./services/geo-service
-      dockerfile: Dockerfile
+    build: { context: ./services/geo-service, dockerfile: Dockerfile }
     container_name: geo-service
-    ports:
-      - "4004:4004"
-    volumes:
-      - ./services/geo-service/src:/app/src
+    ports: [ "4004:4004" ]
+    volumes: [ ./services/geo-service/src:/app/src ]
     environment:
       - PORT=4004
-      # --- THIS IS THE CRITICAL FIX ---
-      # This line reads the key from your .env file and passes it
-      # into the geo-service container.
-      - GOOGLE_GEOCODING_API_KEY=AIzaSyDCg_N7DYHRcNnWb9wJU6pbWYLPh6EfLSk
-    networks:
-      - app-network
+      - GOOGLE_GEOCODING_API_KEY=${GOOGLE_GEOCODING_API_KEY} # FIX: Use .env variable
+    networks: [ app-network ]
 
-  #--------------------------------
-  # REAL-TIME WEBSOCKET MICROSERVICE
-  #--------------------------------
   realtime-service:
-    build:
-      context: ./services/realtime-service
-      dockerfile: Dockerfile
+    build: { context: ./services/realtime-service, dockerfile: Dockerfile }
     container_name: realtime-service
-    ports:
-      - "4003:4003"
-    volumes:
-      - ./services/realtime-service/src:/app/src
+    ports: [ "4003:4003" ]
+    volumes: [ ./services/realtime-service/src:/app/src ]
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - REDIS_URL=${REDIS_URL} # Using single URL for consistency
       - PORT=4003
-    networks:
-      - app-network
-    depends_on:
-      - redis
+    networks: [ app-network ]
+    depends_on: [ redis ]
 
-  #--------------------------------
-  # DATABASES
-  #--------------------------------
-  # REMOVED: The mongodb service is no longer needed
-
-  redis: # Redis is still running locally in a container
+  redis:
     image: redis:latest
     container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - app-network
+    ports: [ "6379:6379" ]
+    networks: [ app-network ]
 
-# Define the shared network for all containers
 networks:
   app-network:
     driver: bridge
-
-# REMOVED: The mongo-data volume is no longer needed
