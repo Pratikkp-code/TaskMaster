@@ -1,0 +1,90 @@
+# This line links the reusable secret vault you created in the Render dashboard.
+# Make sure the name 'taskmaster-secrets' EXACTLY matches the name of your group.
+envVarGroups:
+  - name: taskmaster-secrets
+
+services:
+  # --- Service 1: Redis ---
+  - name: redis
+    type: redis
+    plan: free
+    ipAllowList: [] # Allows services in this Blueprint to connect
+
+  # --- Service 2: Geo Service ---
+  - name: geo-service
+    type: web
+    env: docker
+    plan: free
+    healthCheckPath: /
+    dockerContext: ./services/geo-service
+    dockerfilePath: ./services/geo-service/Dockerfile
+    envVars:
+      - key: PORT # This is not a secret, so it stays here
+        value: 10000
+      # All secrets (like GOOGLE_GEOCODING_API_KEY) are now inherited from the envVarGroup
+
+  # --- Service 3: Real-time Service ---
+  - name: realtime-service
+    type: web
+    env: docker
+    plan: free
+    healthCheckPath: /
+    dockerContext: ./services/realtime-service
+    dockerfilePath: ./services/realtime-service/Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: REDIS_URL # This value comes from the managed Redis service
+        fromService:
+          type: redis
+          name: redis
+          property: connectionString
+
+  # --- Service 4: Auth Service ---
+  - name: auth-service
+    type: web
+    env: docker
+    plan: free
+    healthCheckPath: /
+    dockerContext: ./services/auth-service
+    dockerfilePath: ./services/auth-service/Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      # MONGO_URI and JWT_SECRET are inherited from the envVarGroup
+
+  # --- Service 5: Task Service ---
+  - name: task-service
+    type: web
+    env: docker
+    plan: free
+    healthCheckPath: /
+    dockerContext: ./services/task-service
+    dockerfilePath: ./services/task-service/Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: connectionString
+      # All other secrets (MONGO_URI, GCS_*, etc.) are inherited
+
+  # --- Service 6: Next.js Client ---
+  - name: client
+    type: web
+    env: docker
+    plan: free
+    healthCheckPath: /
+    dockerContext: ./client
+    dockerfilePath: ./client/Dockerfile
+    # The 'envVars' for the client are for building URLs and the Maps key
+    envVars:
+      - key: NEXT_PUBLIC_AUTH_API_URL
+        fromService: { type: web, name: auth-service, property: host }
+      - key: NEXT_PUBLIC_TASK_API_URL
+        fromService: { type: web, name: task-service, property: host }
+      - key: NEXT_PUBLIC_REALTIME_API_URL
+        fromService: { type: web, name: realtime-service, property: host }
+      # NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is inherited
