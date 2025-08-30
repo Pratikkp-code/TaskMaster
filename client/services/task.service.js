@@ -2,7 +2,10 @@ import axios from 'axios';
 import { get } from 'mongoose';
 
 
-const API_URL = 'http://localhost:4002/api/tasks/';
+const API_HOST = process.env.NEXT_PUBLIC_TASK_API_URL 
+  ? `https://${process.env.NEXT_PUBLIC_TASK_API_URL}`
+  : 'http://localhost:4002';
+const API_URL = `${API_HOST}/api/tasks/`;
 
 
 const getAuthHeader = () => {
