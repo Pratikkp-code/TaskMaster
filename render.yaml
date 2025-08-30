@@ -64,6 +64,13 @@ services:
     envVars:
       - key: PORT
         value: 10000
+        
+      - key: GEO_SERVICE_URL
+        fromService:
+          type: web
+          name: geo-service
+          property: host
+          
       - key: REDIS_URL
         fromService:
           type: redis
