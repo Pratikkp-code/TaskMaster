@@ -1,10 +1,9 @@
 services:
   # --- Service 1: The Redis Database ---
-  # Render provides this as a managed service.
   - type: redis
-    name: redis # This name must match what your other services expect
+    name: redis
     plan: free
-    ipAllowList: [] # Allow all your other services to connect
+    ipAllowList: []
 
   # --- Service 2: The Geo Service (Backend) ---
   - type: web
@@ -12,14 +11,13 @@ services:
     env: docker
     dockerContext: ./services/geo-service
     dockerfilePath: ./services/geo-service/Dockerfile
-    plan: free # Use the free instance type
-    # Health check to ensure the service is running before accepting traffic
+    plan: free
     healthCheckPath: /
     envVars:
       - key: PORT
-        value: 10000 # Render will automatically use this port
+        value: 10000
       - key: GOOGLE_GEOCODING_API_KEY
-        fromSecret: GOOGLE_GEOCODING_API_KEY # We will add this secret in the Render dashboard
+        fromSecret: GOOGLE_GEOCODING_API_KEY
 
   # --- Service 3: The Real-time Service (Backend) ---
   - type: web
@@ -32,16 +30,11 @@ services:
     envVars:
       - key: PORT
         value: 10000
-      - key: REDIS_HOST
-        fromService:
+      - fromService: # Get Redis URL from the managed service
           type: redis
           name: redis
-          property: host
-      - key: REDIS_PORT
-        fromService:
-          type: redis
-          name: redis
-          property: port
+          property: url
+        key: REDIS_URL
 
   # --- Service 4: The Auth Service (Backend) ---
   - type: web
@@ -79,17 +72,12 @@ services:
       - key: GCS_BUCKET_NAME
         fromSecret: GCS_BUCKET_NAME
       - key: GOOGLE_APPLICATION_CREDENTIALS
-        fromSecret: GCP_CREDENTIALS_JSON # Path to the secret file
-      - key: REDIS_HOST
-        fromService:
+        fromSecret: GCP_CREDENTIALS_JSON
+      - fromService:
           type: redis
           name: redis
-          property: host
-      - key: REDIS_PORT
-        fromService:
-          type: redis
-          name: redis
-          property: port
+          property: url
+        key: REDIS_URL
 
   # --- Service 6: The Next.js Client (Frontend) ---
   - type: web
@@ -98,13 +86,23 @@ services:
     dockerContext: ./client
     dockerfilePath: ./client/Dockerfile
     plan: free
-    # Health check for the Next.js app
     healthCheckPath: /
-    # Define the environment variables the Next.js app needs at BUILD time
-    dockerBuildCommand: 
-      docker build
-      --build-arg NEXT_PUBLIC_AUTH_API_URL=${AUTH_SERVICE_URL}
-      --build-arg NEXT_PUBLIC_TASK_API_URL=${TASK_SERVICE_URL}
-      --build-arg NEXT_PUBLIC_REALTIME_API_URL=${REALTIME_SERVICE_URL}
-      --build-arg NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
-      -t $IMAGE_URL .
+    # The 'envVars' here are automatically available during the build process
+    envVars:
+      - key: NEXT_PUBLIC_AUTH_API_URL
+        fromService:
+          type: web
+          name: auth-service
+          property: url
+      - key: NEXT_PUBLIC_TASK_API_URL
+        fromService:
+          type: web
+          name: task-service
+          property: url
+      - key: NEXT_PUBLIC_REALTIME_API_URL
+        fromService:
+          type: web
+          name: realtime-service
+          property: url
+      - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        fromSecret: GOOGLE_MAPS_API_KEY
