@@ -48,7 +48,7 @@ if (err.response?.status === 401) { authService.logout(); router.push('/login');
 });
 }, [debouncedSearchTerm, router]);
 useEffect(() => {
-const socket = new WebSocket('ws://localhost:4003');
+const socket = new WebSocket('wss://realtime-service-4dx3.onrender.com');
 socket.onmessage = (event) => {
 const message = JSON.parse(event.data);
 if (message.event === 'TASK_UPDATED') {
