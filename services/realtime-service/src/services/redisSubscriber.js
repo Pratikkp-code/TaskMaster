@@ -1,7 +1,7 @@
 import { createClient } from 'redis';
 
 const subscriber = createClient({
-  url: process.env.REDIS_URL
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
 });
 
 subscriber.on('error', (err) => console.error('Redis Subscriber Error', err));

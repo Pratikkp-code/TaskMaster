@@ -12,18 +12,7 @@ const app = express();
 const port = process.env.PORT || 4002;
 
 // Middleware
-app.use(cors({
-  origin: '*', 
-  credentials: true, 
-  exposedHeaders: ['Access-Control-Allow-Private-Network'],
-  allowedHeaders: ['Content-Type', 'x-auth-token', 'Access-Control-Allow-Private-Network'],
-}));
-
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Private-Network', 'true');
-    next();
-});
-
+app.use(cors());
 app.use(express.json());
 
 // Define Routes
