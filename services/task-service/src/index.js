@@ -12,7 +12,10 @@ const app = express();
 const port = process.env.PORT || 4002;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  credentials: true,
+}));
 app.use(express.json());
 
 // Define Routes
