@@ -7,6 +7,12 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const customStyles = {
   content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
     backgroundColor: '#1B263B',
     border: '1px solid #3B546B',
     borderRadius: '12px',
@@ -14,9 +20,11 @@ const customStyles = {
     width: '90%',
     maxWidth: '500px',
     padding: '24px',
+    zIndex: 1001,
   },
   overlay: {
     backgroundColor: 'rgba(13, 27, 42, 0.9)',
+    zIndex: 1000,
   },
 };
 
