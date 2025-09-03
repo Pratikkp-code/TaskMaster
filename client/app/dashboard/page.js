@@ -69,13 +69,16 @@ const columns = useMemo(() => ({
 'Done': tasks.filter(t => t.status === 'Done'),
 }), [tasks]);
 const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
-const handleCreateTask = async (title) => {
-if (!title) return;
-try {
-await taskService.createTask(title, '', 'To Do');
-} catch (error) {
-console.error('Failed to create task', error);
-}
+const handleCreateTask = async (title, dueDate) => {
+  if (!title) return;
+  const finalDueDate = dueDate || new Date(new Date().setDate(new Date().getDate() + 3)).toISOString();
+
+  try {
+    await taskService.createTask(title, '', 'To Do', finalDueDate);
+  } catch (error) {
+    console.error('Failed to create task:', error);
+    alert('Failed to create the task.');
+  }
 };
 const handleOpenTaskDetails = (task) => { setSelectedTask(task); setIsDetailModalOpen(true); };
 const handleStatusChange = (taskToUpdate, newStatus) => {
