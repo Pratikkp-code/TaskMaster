@@ -5,7 +5,10 @@ import axios from 'axios';
 const app = express();
 const port = process.env.PORT || 4004;
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  credentials: true,
+}));
 app.use(express.json());
 
 app.get('/', (req, res) => {
