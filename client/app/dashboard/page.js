@@ -75,6 +75,8 @@ const handleCreateTask = async (title, dueDate) => {
 
   try {
     await taskService.createTask(title, '', 'To Do', finalDueDate);
+    const newTask = response.data;
+    setTasks(prevTasks => [newTask, ...prevTasks]);
   } catch (error) {
     console.error('Failed to create task:', error);
     alert('Failed to create the task.');
