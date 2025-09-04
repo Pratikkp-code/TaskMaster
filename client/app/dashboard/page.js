@@ -241,9 +241,10 @@ return (
             ) : (
                 <CalendarView tasks={tasks} onTaskClick={handleOpenTaskDetails} onTaskCreate={handleCreateTask} />
             )}
-        </div>
+        
         <TaskDetailModal task={selectedTask} isOpen={isDetailModalOpen} onRequestClose={() => setIsDetailModalOpen(false)} />
       </div>
+     </div>
     </main>
   );
 }
