@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { DndContext, PointerSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core';
-import { SortableContext } from '@dnd-kit/sortable';
+import { DndContext, PointerSensor, useSensor, useSensors, DragOverlay ,useDroppable } from '@dnd-kit/core';
+import { SortableContext , arrayMove } from '@dnd-kit/sortable';
 import { useDebounce } from 'use-debounce';
 import authService from '../../services/auth.service';
 import taskService from '../../services/task.service';
@@ -12,24 +12,35 @@ import TaskDetailModal from '../../components/TaskDetailModal';
 import AddTaskCard from '../../components/AddTaskCard';
 
 
-const Column = ({ id, title, tasks, onTaskCreated, onClick, color,onDelete }) => (
-<div className="flex-shrink-0 w-[320px] bg-[#1B263B] p-4 rounded-2xl shadow-xl h-full flex flex-col">
-    <h2 className={`text-sm font-bold mb-4 px-1 ${color}`}>{title.toUpperCase()}</h2>
-    <div className="flex-grow overflow-y-auto custom-scrollbar pr-2">
-<SortableContext id={id} items={tasks.map(t => t._id)}>
-<div className="space-y-4">
-{tasks.map(task => <TaskCard key={task._id} 
-          task={task} 
-          onClick={onClick}  
-          onDelete={onDelete}
-          />)}
-</div>
-</SortableContext>
-</div>
-{title === 'To Do' && <AddTaskCard onTaskCreated={onTaskCreated} />}
-</div>
-);
+const Column = ({ id, title, tasks, onTaskCreated, onClick, color, onDelete }) => {
+  const { setNodeRef } = useDroppable({
+    id: id,
+  });
 
+  return (
+    <div
+      ref={setNodeRef}
+      className="flex-shrink-0 w-[320px] bg-[#1B263B] p-4 rounded-2xl shadow-xl h-full flex flex-col"
+    >
+      <h2 className={`text-sm font-bold mb-4 px-1 ${color}`}>{title.toUpperCase()}</h2>
+      <div className="flex-grow overflow-y-auto custom-scrollbar pr-2">
+        <SortableContext id={id} items={tasks.map(t => t._id)}>
+          <div className="space-y-4">
+            {tasks.map(task => (
+              <TaskCard
+                key={task._id}
+                task={task}
+                onClick={onClick}
+                onDelete={onDelete}
+              />
+            ))}
+          </div>
+        </SortableContext>
+      </div>
+      {title === 'To Do' && <AddTaskCard onTaskCreated={onTaskCreated} />}
+    </div>
+  );
+};
 
 export default function DashboardPage() {
 const [tasks, setTasks] = useState([]);
@@ -68,7 +79,7 @@ const columns = useMemo(() => ({
 'To Do': tasks.filter(t => t.status === 'To Do'),
 'Done': tasks.filter(t => t.status === 'Done'),
 }), [tasks]);
-const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 const handleCreateTask = async (title, dueDate) => {
   if (!title) return;
   const finalDueDate = dueDate || new Date(new Date().setDate(new Date().getDate() + 3)).toISOString();
@@ -93,18 +104,33 @@ taskService.deleteTask(taskId).catch(() => alert("Failed to delete task."));
 const findColumn = taskId => Object.keys(columns).find(key => columns[key].some(t => t._id === taskId));
 const handleDragStart = (event) => { setActiveTask(tasks.find(t => t._id === event.active.id) || null); };
 const handleDragEnd = (event) => {
-const { active, over } = event;
-if (!over || !activeTask) { setActiveTask(null); return; }
-const overId = over.id;
-const overIsAColumn = over.data.current?.type === 'Column' || columns[overId];
-let destinationColumn = '';
-if (overIsAColumn) { destinationColumn = overId; }
-else { destinationColumn = findColumn(overId); }
-if (destinationColumn && activeTask.status !== destinationColumn) {
-handleStatusChange(activeTask, destinationColumn);
-}
-setActiveTask(null);
-};
+    const { active, over } = event;
+
+    if (!over || !activeTask) {
+      setActiveTask(null);
+      return;
+    }
+    const activeId = active.id;
+    const overId = over.id;
+    const activeColumnId = findColumn(activeId);
+    const overColumnId = findColumn(overId);
+    if (activeColumnId === overColumnId) {
+      setTasks(prevTasks => {
+        const sortedTasks = prevTasks.filter(t => t.status === activeColumnId);
+        const oldIndex = sortedTasks.findIndex(t => t._id === activeId);
+        const newIndex = sortedTasks.findIndex(t => t._id === overId);
+        const newSortedTasks = arrayMove(sortedTasks, oldIndex, newIndex);
+        return prevTasks.map(t => {
+          const updatedTask = newSortedTasks.find(nt => nt._id === t._id);
+          return updatedTask || t;
+        });
+      });
+    }
+    else if (activeColumnId !== overColumnId) {
+      handleStatusChange(activeTask, overColumnId);
+    }
+    setActiveTask(null);
+  };
 return (
     <main className="min-h-screen relative overflow-hidden bg-[#0D1B2A] text-gray-200 font-sans p-6">
       <style>
