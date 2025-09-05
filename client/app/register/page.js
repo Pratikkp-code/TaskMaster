@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link'; 
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 import authService from '../../services/auth.service.js';
 
 export default function Register() {
@@ -25,96 +26,85 @@ export default function Register() {
   };
 
   return (
-    <main className="min-h-screen relative overflow-hidden bg-[#0D1B2A] text-gray-200 font-sans p-6 flex items-center justify-center">
+    <main className="min-h-screen relative overflow-hidden bg-background text-foreground font-sans p-6 flex items-center justify-center">
       <style>
         {`
-        /* Keyframes for a high-tech particle animation */
-        @keyframes tech-float {
-          0% {
-            transform: translateY(0) scale(1) translateX(0);
-            opacity: 0.2;
-          }
-          50% {
-            transform: translateY(-50vh) scale(1.1) translateX(20px);
-            opacity: 0.8;
-          }
-          100% {
-            transform: translateY(-100vh) scale(1) translateX(0);
-            opacity: 0.2;
-          }
+        /* Keyframe animation for the background pulse effect */
+        @keyframes pulse-slow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
-        
-        .particle {
-          position: absolute;
-          bottom: -20px;
-          animation: tech-float linear infinite;
-          border-radius: 50%;
+        .animate-pulse-slow {
+          animation: pulse-slow 15s ease-in-out infinite;
+          background-size: 200% 200%;
         }
         `}
       </style>
-      
-      <div className="absolute inset-0 z-0">
-        {[...Array(50)].map((_, i) => (
-          <svg 
-            key={i} 
-            className="particle" 
-            style={{ 
-              left: `${Math.random() * 100}vw`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${Math.random() * 10 + 5}s`,
-              width: `${Math.random() * 10 + 5}px`,
-              height: `${Math.random() * 10 + 5}px`,
-              fill: `hsl(${Math.random() * 60 + 180}, 80%, 60%)`
-            }}
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-        ))}
+
+      <div className="absolute inset-0 z-0 opacity-40">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-800 via-zinc-900 to-blue-800 animate-pulse-slow"></div>
       </div>
       
-      <div className="relative z-10 w-full max-w-md p-8 space-y-6 bg-[#1B263B] rounded-2xl shadow-xl border border-gray-700">
-        <h2 className="text-3xl font-extrabold text-center text-white tracking-wide">Create an Account</h2>
-        <form onSubmit={handleRegister} className="space-y-6">
+      <div className="relative z-10 w-full max-w-md p-8 space-y-6 bg-card rounded-2xl shadow-xl border border-border">
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-3xl font-extrabold text-center text-card-foreground tracking-wide"
+        >
+          Create an Account
+        </motion.h2>
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+          onSubmit={handleRegister}
+          className="space-y-6"
+        >
           <div>
-            <label className="block text-sm font-medium text-gray-400">Name</label>
+            <label className="block text-sm font-medium text-muted-foreground">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 mt-1 text-gray-100 bg-[#243555] border-2 border-transparent rounded-lg focus:outline-none focus:border-cyan-500 transition-colors duration-200"
+              className="w-full px-4 py-2 mt-1 text-card-foreground bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-primary transition-colors duration-200"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-400">Email</label>
+            <label className="block text-sm font-medium text-muted-foreground">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 mt-1 text-gray-100 bg-[#243555] border-2 border-transparent rounded-lg focus:outline-none focus:border-cyan-500 transition-colors duration-200"
+              className="w-full px-4 py-2 mt-1 text-card-foreground bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-primary transition-colors duration-200"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-400">Password</label>
+            <label className="block text-sm font-medium text-muted-foreground">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 mt-1 text-gray-100 bg-[#243555] border-2 border-transparent rounded-lg focus:outline-none focus:border-cyan-500 transition-colors duration-200"
+              className="w-full px-4 py-2 mt-1 text-card-foreground bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-primary transition-colors duration-200"
               required
             />
           </div>
-          <button type="submit" className="w-full py-3 font-semibold text-white bg-cyan-600 rounded-lg hover:bg-cyan-700 transition-all shadow-md transform active:scale-95">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="w-full py-3 font-semibold text-primary-foreground bg-primary rounded-lg hover:bg-cyan-700 transition-all shadow-md transform active:scale-95"
+          >
             Register
-          </button>
+          </motion.button>
           {message && <p className="text-center text-red-500">{message}</p>}
-        </form>
-         <p className="text-center text-sm text-gray-400">
+        </motion.form>
+          <p className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Link href="/login" className="font-medium text-cyan-400 hover:underline">
+          <Link href="/login" className="font-medium text-primary hover:underline">
             Login here
           </Link>
         </p>
