@@ -11,7 +11,7 @@ return {};
 }
 };
 const sendMessage = (message) => {
-return axios.post(${API_URL}/chat, { message }, { headers: getAuthHeader() });
+return axios.post(`${API_URL}/chat`, { message }, { headers: getAuthHeader() });
 };
 const chatbotService = {
 sendMessage,
