@@ -1,14 +1,26 @@
 "use client";
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function PublicHomePage() {
 
 
   return (
-    <main className="min-h-screen relative overflow-hidden bg-[#0D1B2A] text-gray-200 font-sans p-6 flex flex-col items-center justify-center text-center">
+    <main className="min-h-screen relative overflow-hidden bg-background text-foreground font-sans p-6 flex flex-col items-center justify-center text-center">
       <style>
         {`
+        /* Keyframe animation for the background pulse effect */
+        @keyframes pulse-slow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 15s ease-in-out infinite;
+          background-size: 200% 200%;
+        }
+        
         /* Keyframes for a high-tech particle animation */
         @keyframes tech-float {
           0% {
@@ -34,40 +46,46 @@ export default function PublicHomePage() {
         `}
       </style>
       
-      <div className="absolute inset-0 z-0">
-        {[...Array(50)].map((_, i) => (
-          <svg 
-            key={i} 
-            className="particle" 
-            style={{ 
-              left: `${Math.random() * 100}vw`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${Math.random() * 10 + 5}s`,
-              width: `${Math.random() * 10 + 5}px`,
-              height: `${Math.random() * 10 + 5}px`,
-              fill: `hsl(${Math.random() * 60 + 180}, 80%, 60%)`
-            }}
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-        ))}
+      {/* Animated background using a simple CSS gradient animation */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-800 via-zinc-900 to-blue-800 animate-pulse-slow"></div>
       </div>
       
       <div className="relative z-10 max-w-2xl">
-        <h1 className="text-5xl font-extrabold tracking-wider mb-4 text-white">
+        <motion.h1 
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-6xl font-extrabold tracking-tight text-foreground drop-shadow-lg"
+        >
           Welcome to TaskMaster
-        </h1>
-        <p className="text-lg text-gray-400 mb-8">
-          The over-engineered, real-time solution to manage your daily.
-        </p>
-        <div className="flex justify-center gap-4">
-          <Link href="/login" className="px-6 py-3 font-semibold text-white bg-cyan-600 rounded-lg hover:bg-cyan-700 transition-colors shadow-md transform active:scale-95">
-            Login
+        </motion.h1>
+        <motion.p
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
+            className="text-xl text-muted-foreground mt-4"
+        >
+          The over-engineered, real-time solution to manage your daily tasks.
+        </motion.p>
+        <div className="flex justify-center gap-4 mt-8">
+          <Link href="/login">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 font-semibold text-primary-foreground bg-primary rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-200 transform active:scale-95 cursor-pointer"
+            >
+              Login
+            </motion.div>
           </Link>
-          <Link href="/register" className="px-6 py-3 font-semibold text-white bg-[#1B263B] rounded-lg hover:bg-[#243555] transition-colors shadow-md transform active:scale-95">
-            Register
+          <Link href="/register">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 font-semibold text-secondary-foreground bg-secondary rounded-lg shadow-lg hover:bg-zinc-700 transition-all duration-200 transform active:scale-95 cursor-pointer"
+            >
+              Register
+            </motion.div>
           </Link>
         </div>
       </div>
