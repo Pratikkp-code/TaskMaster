@@ -132,7 +132,7 @@ const handleDragEnd = (event) => {
     setActiveTask(null);
   };
 return (
-    <main className="min-h-screen relative overflow-hidden bg-[#0D1B2A] text-gray-200 font-sans p-6">
+    <main className="min-h-screen relative overflow-hidden bg-background text-foreground font-sans p-6">
       <style>
         {`
         /* Keyframes for a gentle spin animation */
@@ -182,35 +182,18 @@ return (
         `}
       </style>
       
-      <div className="absolute inset-0 z-0">
-        {[...Array(50)].map((_, i) => (
-          <svg 
-            key={i} 
-            className="particle" 
-            style={{ 
-              left: `${Math.random() * 100}vw`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${Math.random() * 10 + 5}s`,
-              width: `${Math.random() * 10 + 5}px`,
-              height: `${Math.random() * 10 + 5}px`,
-              fill: `hsl(${Math.random() * 60 + 180}, 80%, 60%)` 
-            }}
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-        ))}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-800 via-zinc-900 to-blue-800 animate-pulse-slow"></div>
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <header className="flex-shrink-0 flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-          <h1 className="text-4xl font-extrabold text-white tracking-wider flex items-center gap-4 font-family: Arial, sans-serif;">
+          <h1 className="text-4xl font-extrabold text-foreground tracking-wider flex items-center gap-4 font-family: Arial, sans-serif;">
             TaskMaster
           </h1>
           
           <div className="flex-grow max-w-xl relative">
-            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" />
               <path d="m21 21-4.35-4.35" />
             </svg>
@@ -219,24 +202,24 @@ return (
               placeholder="Search tasks..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#1B263B] text-gray-100 placeholder-gray-400 border-2 border-transparent focus:outline-none focus:border-cyan-500 transition-colors duration-200"
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-secondary text-card-foreground placeholder-muted-foreground border-2 border-transparent focus:outline-none focus:border-primary transition-colors duration-200"
             />
           </div>
           
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setView('board')} 
-              className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 transform active:scale-95 ${view === 'board' ? 'bg-cyan-600 text-white shadow-md' : 'bg-[#1B263B] text-gray-300 hover:bg-[#243555]'}`}>
+            <button
+              onClick={() => setView('board')}
+              className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 transform active:scale-95 ${view === 'board' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-muted'}`}>
                 Board
             </button>
-            <button 
-              onClick={() => setView('calendar')} 
-              className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 transform active:scale-95 ${view === 'calendar' ? 'bg-cyan-600 text-white shadow-md' : 'bg-[#1B263B] text-gray-300 hover:bg-[#243555]'}`}>
+            <button
+              onClick={() => setView('calendar')}
+              className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 transform active:scale-95 ${view === 'calendar' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-muted'}`}>
                 Calendar
             </button>
-            <button 
-              onClick={() => authService.logout()} 
-              className={`px-5 py-2 bg-red-600 text-sm font-semibold rounded-lg text-white shadow-md hover:bg-red-700 transition-all duration-200 flex items-center gap-2 transform active:scale-95`}>
+            <button
+              onClick={() => authService.logout()}
+              className={`px-5 py-2 bg-destructive text-sm font-semibold rounded-lg text-primary-foreground shadow-md hover:bg-destructive/90 transition-all duration-200 flex items-center gap-2 transform active:scale-95`}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <path d="M16 17l5-5-5-5" />
@@ -251,9 +234,9 @@ return (
                 <div className="inline-flex gap-6 h-full">
               <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
 
-              <Column id="To Do" title="To Do" tasks={columns['To Do']} onTaskCreated={handleCreateTask} onClick={handleOpenTaskDetails} onDelete={handleDeleteTask} color="text-accent-yellow" />
+              <Column id="To Do" title="To Do" tasks={columns['To Do']} onTaskCreated={handleCreateTask} onClick={handleOpenTaskDetails} onDelete={handleDeleteTask} color="text-yellow-400" />
 
-              <Column id="Done" title="Done" tasks={columns['Done']} onClick={handleOpenTaskDetails} onDelete={handleDeleteTask} color="text-accent-green" />
+              <Column id="Done" title="Done" tasks={columns['Done']} onClick={handleOpenTaskDetails} onDelete={handleDeleteTask} color="text-green-400" />
 
               <DragOverlay>
 
@@ -263,14 +246,13 @@ return (
 
             </DndContext>
 
-              </div>        
+              </div>
             ) : (
                 <CalendarView tasks={tasks} onTaskClick={handleOpenTaskDetails} onTaskCreate={handleCreateTask} />
             )}
-        
-        <TaskDetailModal task={selectedTask} isOpen={isDetailModalOpen} onRequestClose={() => setIsDetailModalOpen(false)} />
-      </div>
-     </div>
-    </main>
+            <TaskDetailModal task={selectedTask} isOpen={isDetailModalOpen} onRequestClose={() => setIsDetailModalOpen(false)} />
+          </div>
+        </div>
+      </main>
   );
-}
+};
