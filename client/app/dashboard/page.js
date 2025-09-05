@@ -10,6 +10,7 @@ import TaskCard from '../../components/TaskCard';
 import CalendarView from '../../components/CalendarView';
 import TaskDetailModal from '../../components/TaskDetailModal';
 import AddTaskCard from '../../components/AddTaskCard';
+import Chatbot from '../../components/Chatbot';
 
 
 const Column = ({ id, title, tasks, onTaskCreated, onClick, color, onDelete }) => {
@@ -253,6 +254,7 @@ return (
             <TaskDetailModal task={selectedTask} isOpen={isDetailModalOpen} onRequestClose={() => setIsDetailModalOpen(false)} />
           </div>
         </div>
+        <Chatbot />
       </main>
   );
 };

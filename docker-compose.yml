@@ -63,6 +63,8 @@ services:
       - GCS_PROJECT_ID=${GCS_PROJECT_ID}
       - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
       - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-credentials.json
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEO_SERVICE_URL=${GEO_SERVICE_URL}
     networks:
       - app-network
     depends_on: # We still depend on the local redis container

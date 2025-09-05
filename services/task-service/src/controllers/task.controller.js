@@ -1,6 +1,9 @@
 import axios from 'axios';
 import Task from "../models/task.model.js";    
 import { redisClient } from "../config/redis.js";
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const getTasks = async (req, res) => {
   try {
@@ -207,8 +210,6 @@ export const setTaskLocation = async (req, res) => {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).json({ msg: 'Task not found' });
     if (task.user.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
-
-
     const GEO_SERVICE_URL = process.env.GEO_SERVICE_URL
     
     const geoResponse = await axios.post(`https://${GEO_SERVICE_URL}.onrender.com/api/geocode`, { address });
@@ -226,6 +227,34 @@ export const setTaskLocation = async (req, res) => {
   } catch (err) {
     console.error('Set Location Error:', err.response ? err.response.data : err.message);
     res.status(500).send('Server Error');
+  }
+};
+
+export const chatWithAI = async (req, res) => {
+  const { message } = req.body;
+  if (!message) {
+    return res.status(400).json({ msg: 'Message is required' });
+  }
+  try {
+    const tasksContext = await Task.find({ user: req.user.id }).sort({ createdAt: -1 });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const prompt = `
+      You are TaskMaster AI, a helpful and encouraging productivity assistant.
+      Your primary role is to answer questions based *only* on the user's current task list provided below.
+      Do not make up tasks. If you don't know the answer, say so. Keep your replies concise.
+
+      Here is the user's current task list in JSON format:
+      ${JSON.stringify(tasksContext, null, 2)}
+
+      Based on that data, please answer the user's question: "${message}"
+    `;
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    res.status(200).json({ reply: text });
+  } catch (err) {
+    console.error('Gemini API Error:', err.message);
+    res.status(500).send('Error communicating with AI service');
   }
 };
     

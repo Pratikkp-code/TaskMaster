@@ -1,5 +1,5 @@
 import express from 'express';
-import { getTasks, createTask ,updateTask, deleteTask, searchTasks, addComment, setTaskLocation} from '../controllers/task.controller.js';
+import { getTasks, createTask ,updateTask, deleteTask, searchTasks, addComment, setTaskLocation, chatWithAI} from '../controllers/task.controller.js';
 import authMiddleware from '../middleware/auth.middleware.js';
 import uploadToGCS  from '../gcs.upload.js';
 import { attachFile } from '../controllers/task.controller.js';
@@ -14,6 +14,8 @@ router.route('/')
   .post(authMiddleware, createTask);
 
 router.get('/search', authMiddleware, searchTasks);
+
+router.post('/chat', authMiddleware, chatWithAI);
 
 router.route('/:id')
   .put(authMiddleware, updateTask)
