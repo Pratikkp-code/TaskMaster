@@ -237,7 +237,7 @@ export const chatWithAI = async (req, res) => {
   }
   try {
     const tasksContext = await Task.find({ user: req.user.id }).sort({ createdAt: -1 });
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
     const prompt = `
       You are TaskMaster AI, a helpful and encouraging productivity assistant.
       Your primary role is to answer questions based *only* on the user's current task list provided below.
@@ -254,6 +254,9 @@ export const chatWithAI = async (req, res) => {
     res.status(200).json({ reply: text });
   } catch (err) {
     console.error('Gemini API Error:', err.message);
+    if (err.response) {
+      console.error('Gemini API Response Data:', err.response.data);
+    }
     res.status(500).send('Error communicating with AI service');
   }
 };
