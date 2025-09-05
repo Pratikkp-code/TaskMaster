@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'; 
 import authService from '../../services/auth.service.js';
+import { motion } from 'framer-motion';
 
 export default function Login() {
   const [email, setEmail] = useState('');
