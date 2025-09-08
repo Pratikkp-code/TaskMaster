@@ -237,7 +237,7 @@ export const chatWithAI = async (req, res) => {
   }
   try {
     const tasksContext = await Task.find({ user: req.user.id }).sort({ createdAt: -1 });
-    const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const prompt = `
       You are TaskMaster AI, a helpful and encouraging productivity assistant.
       Your primary role is to answer questions based *only* on the user's current task list provided below.
