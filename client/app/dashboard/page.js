@@ -102,6 +102,10 @@ taskService.updateTask(taskToUpdate._id, { status: newStatus })
 const handleDeleteTask = (taskId) => {
 taskService.deleteTask(taskId).catch(() => alert("Failed to delete task."));
 };
+const handleLogout = () => {
+    authService.logout();
+    router.push('/login');
+};
 const findColumn = taskId => Object.keys(columns).find(key => columns[key].some(t => t._id === taskId));
 const handleDragStart = (event) => { setActiveTask(tasks.find(t => t._id === event.active.id) || null); };
 const handleDragEnd = (event) => {
@@ -224,16 +228,13 @@ return (
               className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 transform active:scale-95 ${view === 'calendar' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-muted'}`}>
                 Calendar
             </button>
-            <button
-              onClick={() => authService.logout()}
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleLogout}
               className={`px-5 py-2 bg-destructive text-sm font-semibold rounded-lg text-primary-foreground shadow-md hover:bg-destructive/90 transition-all duration-200 flex items-center gap-2 transform active:scale-95`}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <path d="M16 17l5-5-5-5" />
-                <path d="M21 12h-9" />
-              </svg>
               Logout
-            </button>
+            </motion.button>
           </div>
         </header>
         <div className="flex-grow overflow-x-auto pb-4">
