@@ -107,28 +107,34 @@ const handleDragStart = (event) => { setActiveTask(tasks.find(t => t._id === eve
 const handleDragEnd = (event) => {
     const { active, over } = event;
 
-    if (!over || !activeTask) {
+    if (!over) {
       setActiveTask(null);
       return;
     }
+
     const activeId = active.id;
     const overId = over.id;
-    const activeColumnId = findColumn(activeId);
-    const overColumnId = findColumn(overId);
-    if (activeColumnId === overColumnId) {
-      setTasks(prevTasks => {
-        const sortedTasks = prevTasks.filter(t => t.status === activeColumnId);
-        const oldIndex = sortedTasks.findIndex(t => t._id === activeId);
-        const newIndex = sortedTasks.findIndex(t => t._id === overId);
-        const newSortedTasks = arrayMove(sortedTasks, oldIndex, newIndex);
-        return prevTasks.map(t => {
-          const updatedTask = newSortedTasks.find(nt => nt._id === t._id);
-          return updatedTask || t;
-        });
-      });
+
+    if (activeId === overId) {
+      setActiveTask(null);
+      return; 
     }
-    else if (activeColumnId !== overColumnId) {
-      handleStatusChange(activeTask, overColumnId);
+    const activeColumn = findColumn(activeId);
+    const overColumn = findColumn(overId) || overId;
+    if (!activeColumn || !overColumn) {
+      setActiveTask(null);
+      return;
+    }
+    if (activeColumn !== overColumn) {
+      const taskToMove = tasks.find(t => t._id === activeId);
+      if (taskToMove) {
+        handleStatusChange(taskToMove, overColumn.toString());
+      }
+    } 
+    else {
+      const activeIndex = tasks.findIndex(t => t._id === activeId);
+      const overIndex = tasks.findIndex(t => t._id === overId);
+      setTasks(prevTasks => arrayMove(prevTasks, activeIndex, overIndex));
     }
     setActiveTask(null);
   };
