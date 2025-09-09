@@ -11,6 +11,7 @@ import CalendarView from '../../components/CalendarView';
 import TaskDetailModal from '../../components/TaskDetailModal';
 import AddTaskCard from '../../components/AddTaskCard';
 import Chatbot from '../../components/Chatbot';
+import { motion } from 'framer-motion';
 
 
 const Column = ({ id, title, tasks, onTaskCreated, onClick, color, onDelete }) => {
