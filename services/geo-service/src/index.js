@@ -4,7 +4,6 @@ import axios from 'axios';
 
 const app = express();
 const port = process.env.PORT || 4004;
-
 app.use(cors({
   origin: '*',
   credentials: true,
